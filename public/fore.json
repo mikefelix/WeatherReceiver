@@ -1,0 +1,388 @@
+{
+  "response": {
+    "version": "0.1",
+    "termsofService": "http://www.wunderground.com/weather/api/d/terms.html",
+    "features": {
+      "forecast": 1
+    }
+  },
+  "forecast": {
+    "txt_forecast": {
+      "date": "12:43 PM MST",
+      "forecastday": [
+        {
+          "period": 0,
+          "icon": "cloudy",
+          "icon_url": "http://icons.wxug.com/i/c/k/cloudy.gif",
+          "title": "Thursday",
+          "fcttext": "Overcast. A few flurries or snow showers possible. High near 35F. Winds NNE at 10 to 15 mph.",
+          "fcttext_metric": "Cloudy skies. A few flurries or snow showers possible. High 2C. Winds NE at 15 to 25 km/h.",
+          "pop": "20"
+        },
+        {
+          "period": 1,
+          "icon": "nt_partlycloudy",
+          "icon_url": "http://icons.wxug.com/i/c/k/nt_partlycloudy.gif",
+          "title": "Thursday Night",
+          "fcttext": "Cloudy skies early, followed by partial clearing. A few flurries or snow showers possible. Low 21F. Winds NE at 5 to 10 mph.",
+          "fcttext_metric": "Cloudy skies early, then partly cloudy after midnight. A few flurries or snow showers possible. Low -6C. Winds ENE at 10 to 15 km/h.",
+          "pop": "20"
+        },
+        {
+          "period": 2,
+          "icon": "clear",
+          "icon_url": "http://icons.wxug.com/i/c/k/clear.gif",
+          "title": "Friday",
+          "fcttext": "Sunny, along with a few afternoon clouds. High near 35F. Winds NNE at 10 to 15 mph.",
+          "fcttext_metric": "Except for a few afternoon clouds, mainly sunny. High 2C. Winds NE at 15 to 25 km/h.",
+          "pop": "0"
+        },
+        {
+          "period": 3,
+          "icon": "nt_clear",
+          "icon_url": "http://icons.wxug.com/i/c/k/nt_clear.gif",
+          "title": "Friday Night",
+          "fcttext": "Mainly clear skies. Low 19F. Winds ENE at 5 to 10 mph.",
+          "fcttext_metric": "A few clouds. Low -7C. Winds ENE at 10 to 15 km/h.",
+          "pop": "10"
+        },
+        {
+          "period": 4,
+          "icon": "partlycloudy",
+          "icon_url": "http://icons.wxug.com/i/c/k/partlycloudy.gif",
+          "title": "Saturday",
+          "fcttext": "Partly cloudy skies. High 33F. Winds N at 5 to 10 mph.",
+          "fcttext_metric": "Partly cloudy. High 1C. Winds N at 10 to 15 km/h.",
+          "pop": "10"
+        },
+        {
+          "period": 5,
+          "icon": "nt_partlycloudy",
+          "icon_url": "http://icons.wxug.com/i/c/k/nt_partlycloudy.gif",
+          "title": "Saturday Night",
+          "fcttext": "Partly cloudy. Low 19F. Winds light and variable.",
+          "fcttext_metric": "Partly cloudy skies. Low -8C. Winds light and variable.",
+          "pop": "20"
+        },
+        {
+          "period": 6,
+          "icon": "mostlycloudy",
+          "icon_url": "http://icons.wxug.com/i/c/k/mostlycloudy.gif",
+          "title": "Sunday",
+          "fcttext": "Partly cloudy skies during the morning hours will become overcast in the afternoon. High 32F. Winds NNW at 5 to 10 mph.",
+          "fcttext_metric": "Partly cloudy skies during the morning hours will become overcast in the afternoon. High near 0C. Winds NNW at 10 to 15 km/h.",
+          "pop": "20"
+        },
+        {
+          "period": 7,
+          "icon": "nt_chancesnow",
+          "icon_url": "http://icons.wxug.com/i/c/k/nt_chancesnow.gif",
+          "title": "Sunday Night",
+          "fcttext": "Cloudy skies with a few snow showers later at night. Low 18F. Winds light and variable. Chance of snow 30%.",
+          "fcttext_metric": "Cloudy skies with a few snow showers later at night. Low -8C. Winds light and variable. Chance of snow 30%.",
+          "pop": "30"
+        }
+      ]
+    },
+    "simpleforecast": {
+      "forecastday": [
+        {
+          "date": {
+            "epoch": "1448589600",
+            "pretty": "7:00 PM MST on November 26, 2015",
+            "day": 26,
+            "month": 11,
+            "year": 2015,
+            "yday": 329,
+            "hour": 19,
+            "min": "00",
+            "sec": 0,
+            "isdst": "0",
+            "monthname": "November",
+            "monthname_short": "Nov",
+            "weekday_short": "Thu",
+            "weekday": "Thursday",
+            "ampm": "PM",
+            "tz_short": "MST",
+            "tz_long": "America/Denver"
+          },
+          "period": 1,
+          "high": {
+            "fahrenheit": "35",
+            "celsius": "2"
+          },
+          "low": {
+            "fahrenheit": "21",
+            "celsius": "-6"
+          },
+          "conditions": "Overcast",
+          "icon": "cloudy",
+          "icon_url": "http://icons.wxug.com/i/c/k/cloudy.gif",
+          "skyicon": "",
+          "pop": 20,
+          "qpf_allday": {
+            "in": 0.00,
+            "mm": 0
+          },
+          "qpf_day": {
+            "in": 0.00,
+            "mm": 0
+          },
+          "qpf_night": {
+            "in": 0.00,
+            "mm": 0
+          },
+          "snow_allday": {
+            "in": 0.0,
+            "cm": 0.0
+          },
+          "snow_day": {
+            "in": 0.0,
+            "cm": 0.0
+          },
+          "snow_night": {
+            "in": 0.0,
+            "cm": 0.0
+          },
+          "maxwind": {
+            "mph": 15,
+            "kph": 24,
+            "dir": "NNE",
+            "degrees": 23
+          },
+          "avewind": {
+            "mph": 11,
+            "kph": 18,
+            "dir": "NNE",
+            "degrees": 23
+          },
+          "avehumidity": 47,
+          "maxhumidity": 0,
+          "minhumidity": 0
+        },
+        {
+          "date": {
+            "epoch": "1448676000",
+            "pretty": "7:00 PM MST on November 27, 2015",
+            "day": 27,
+            "month": 11,
+            "year": 2015,
+            "yday": 330,
+            "hour": 19,
+            "min": "00",
+            "sec": 0,
+            "isdst": "0",
+            "monthname": "November",
+            "monthname_short": "Nov",
+            "weekday_short": "Fri",
+            "weekday": "Friday",
+            "ampm": "PM",
+            "tz_short": "MST",
+            "tz_long": "America/Denver"
+          },
+          "period": 2,
+          "high": {
+            "fahrenheit": "35",
+            "celsius": "2"
+          },
+          "low": {
+            "fahrenheit": "19",
+            "celsius": "-7"
+          },
+          "conditions": "Clear",
+          "icon": "clear",
+          "icon_url": "http://icons.wxug.com/i/c/k/clear.gif",
+          "skyicon": "",
+          "pop": 0,
+          "qpf_allday": {
+            "in": 0.00,
+            "mm": 0
+          },
+          "qpf_day": {
+            "in": 0.00,
+            "mm": 0
+          },
+          "qpf_night": {
+            "in": 0.00,
+            "mm": 0
+          },
+          "snow_allday": {
+            "in": 0.0,
+            "cm": 0.0
+          },
+          "snow_day": {
+            "in": 0.0,
+            "cm": 0.0
+          },
+          "snow_night": {
+            "in": 0.0,
+            "cm": 0.0
+          },
+          "maxwind": {
+            "mph": 15,
+            "kph": 24,
+            "dir": "NNE",
+            "degrees": 26
+          },
+          "avewind": {
+            "mph": 10,
+            "kph": 16,
+            "dir": "NNE",
+            "degrees": 26
+          },
+          "avehumidity": 52,
+          "maxhumidity": 0,
+          "minhumidity": 0
+        },
+        {
+          "date": {
+            "epoch": "1448762400",
+            "pretty": "7:00 PM MST on November 28, 2015",
+            "day": 28,
+            "month": 11,
+            "year": 2015,
+            "yday": 331,
+            "hour": 19,
+            "min": "00",
+            "sec": 0,
+            "isdst": "0",
+            "monthname": "November",
+            "monthname_short": "Nov",
+            "weekday_short": "Sat",
+            "weekday": "Saturday",
+            "ampm": "PM",
+            "tz_short": "MST",
+            "tz_long": "America/Denver"
+          },
+          "period": 3,
+          "high": {
+            "fahrenheit": "33",
+            "celsius": "1"
+          },
+          "low": {
+            "fahrenheit": "19",
+            "celsius": "-7"
+          },
+          "conditions": "Partly Cloudy",
+          "icon": "partlycloudy",
+          "icon_url": "http://icons.wxug.com/i/c/k/partlycloudy.gif",
+          "skyicon": "",
+          "pop": 10,
+          "qpf_allday": {
+            "in": 0.00,
+            "mm": 0
+          },
+          "qpf_day": {
+            "in": 0.00,
+            "mm": 0
+          },
+          "qpf_night": {
+            "in": 0.00,
+            "mm": 0
+          },
+          "snow_allday": {
+            "in": 0.0,
+            "cm": 0.0
+          },
+          "snow_day": {
+            "in": 0.0,
+            "cm": 0.0
+          },
+          "snow_night": {
+            "in": 0.0,
+            "cm": 0.0
+          },
+          "maxwind": {
+            "mph": 10,
+            "kph": 16,
+            "dir": "N",
+            "degrees": 359
+          },
+          "avewind": {
+            "mph": 6,
+            "kph": 10,
+            "dir": "N",
+            "degrees": 359
+          },
+          "avehumidity": 61,
+          "maxhumidity": 0,
+          "minhumidity": 0
+        },
+        {
+          "date": {
+            "epoch": "1448848800",
+            "pretty": "7:00 PM MST on November 29, 2015",
+            "day": 29,
+            "month": 11,
+            "year": 2015,
+            "yday": 332,
+            "hour": 19,
+            "min": "00",
+            "sec": 0,
+            "isdst": "0",
+            "monthname": "November",
+            "monthname_short": "Nov",
+            "weekday_short": "Sun",
+            "weekday": "Sunday",
+            "ampm": "PM",
+            "tz_short": "MST",
+            "tz_long": "America/Denver"
+          },
+          "period": 4,
+          "high": {
+            "fahrenheit": "32",
+            "celsius": "0"
+          },
+          "low": {
+            "fahrenheit": "18",
+            "celsius": "-8"
+          },
+          "conditions": "Mostly Cloudy",
+          "icon": "mostlycloudy",
+          "icon_url": "http://icons.wxug.com/i/c/k/mostlycloudy.gif",
+          "skyicon": "",
+          "pop": 20,
+          "qpf_allday": {
+            "in": 0.01,
+            "mm": 0
+          },
+          "qpf_day": {
+            "in": 0.00,
+            "mm": 0
+          },
+          "qpf_night": {
+            "in": 0.01,
+            "mm": 0
+          },
+          "snow_allday": {
+            "in": 0.1,
+            "cm": 0.3
+          },
+          "snow_day": {
+            "in": 0.0,
+            "cm": 0.0
+          },
+          "snow_night": {
+            "in": 0.1,
+            "cm": 0.3
+          },
+          "maxwind": {
+            "mph": 10,
+            "kph": 16,
+            "dir": "NNW",
+            "degrees": 344
+          },
+          "avewind": {
+            "mph": 7,
+            "kph": 11,
+            "dir": "NNW",
+            "degrees": 344
+          },
+          "avehumidity": 68,
+          "maxhumidity": 0,
+          "minhumidity": 0
+        }
+      ]
+    }
+  }
+}

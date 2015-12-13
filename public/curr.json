@@ -1,0 +1,94 @@
+
+{
+  "response": {
+  "version":"0.1",
+  "termsofService":"http://www.wunderground.com/weather/api/d/terms.html",
+  "features": {
+  "conditions": 1
+  }
+	}
+  ,	"current_observation": {
+		"image": {
+		"url":"http://icons.wxug.com/graphics/wu2/logo_130x80.png",
+		"title":"Weather Underground",
+		"link":"http://www.wunderground.com"
+		},
+		"display_location": {
+		"full":"Murray, UT",
+		"city":"Murray",
+		"state":"UT",
+		"state_name":"Utah",
+		"country":"US",
+		"country_iso3166":"US",
+		"zip":"84107",
+		"magic":"1",
+		"wmo":"99999",
+		"latitude":"40.65737915",
+		"longitude":"-111.88272095",
+		"elevation":"1321.00000000"
+		},
+		"observation_location": {
+		"full":"APRSWXNET, Salt Lake City, Utah",
+		"city":"APRSWXNET, Salt Lake City",
+		"state":"Utah",
+		"country":"US",
+		"country_iso3166":"US",
+		"latitude":"40.653210",
+		"longitude":"-111.854782",
+		"elevation":"4350 ft"
+		},
+		"estimated": {
+		},
+		"station_id":"MAT921",
+		"observation_time":"Last Updated on November 26, 1:50 PM MST",
+		"observation_time_rfc822":"Thu, 26 Nov 2015 13:50:00 -0700",
+		"observation_epoch":"1448571000",
+		"local_time_rfc822":"Thu, 26 Nov 2015 14:06:19 -0700",
+		"local_epoch":"1448571979",
+		"local_tz_short":"MST",
+		"local_tz_long":"America/Denver",
+		"local_tz_offset":"-0700",
+		"weather":"Overcast",
+		"temperature_string":"35 F (1.7 C)",
+		"temp_f":35,
+		"temp_c":1.7,
+		"relative_humidity":"38%",
+		"wind_string":"From the NE at 10 MPH Gusting to 17.0 MPH",
+		"wind_dir":"NE",
+		"wind_degrees":56,
+		"wind_mph":10,
+		"wind_gust_mph":"17.0",
+		"wind_kph":16.1,
+		"wind_gust_kph":"27.4",
+		"pressure_mb":"1018",
+		"pressure_in":"30.05",
+		"pressure_trend":"-",
+		"dewpoint_string":"12 F (-11 C)",
+		"dewpoint_f":12,
+		"dewpoint_c":-11,
+		"heat_index_string":"NA",
+		"heat_index_f":"NA",
+		"heat_index_c":"NA",
+		"windchill_string":"27 F (-3 C)",
+		"windchill_f":"27",
+		"windchill_c":"-3",
+		"feelslike_string":"27 F (-3 C)",
+		"feelslike_f":"27",
+		"feelslike_c":"-3",
+		"visibility_mi":"10.0",
+		"visibility_km":"16.1",
+		"solarradiation":"--",
+		"UV":"2","precip_1hr_string":"0.00 in ( 0 mm)",
+		"precip_1hr_in":"0.00",
+		"precip_1hr_metric":" 0",
+		"precip_today_string":" in ( mm)",
+		"precip_today_in":"",
+		"precip_today_metric":"--",
+		"icon":"cloudy",
+		"icon_url":"http://icons.wxug.com/i/c/k/cloudy.gif",
+		"forecast_url":"http://www.wunderground.com/US/UT/Murray.html",
+		"history_url":"http://www.wunderground.com/weatherstation/WXDailyHistory.asp?ID=MAT921",
+		"ob_url":"http://www.wunderground.com/cgi-bin/findweather/getForecast?query=40.653210,-111.854782",
+		"nowcast":""
+	}
+}
