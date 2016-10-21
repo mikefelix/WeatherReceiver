@@ -1,20 +1,30 @@
 package controllers
 
+import choreography.TwitterConverters._
+//import com.twitter.util.{Future => TFuture}
+import play.api.mvc.Results.Ok
 import play.api.mvc._
-import play.api.mvc.Results._
-import services.WeatherService
+import services._
 
-import scala.util.{Try, Success, Failure}
+import scala.concurrent.Future
 
 object WeatherController {
-  def current() = weatherAction(WeatherService.getCurrentWeather)
-  def forecast1() = weatherAction(WeatherService.getForecast1)
-  def forecast2() = weatherAction(WeatherService.getForecast2)
+  val currentWeatherService = new CurrentWeatherService
+  val forecast1WeatherService = new Forecast1WeatherService
+  val forecast2WeatherService = new Forecast2WeatherService
 
-  private def weatherAction(call: => Try[String]) = Action {
-    call match {
-      case Failure(exception) => InternalServerError
-      case Success(info) => Ok(info)
+
+
+  def current = Action { req =>
+    val res: Future[Result] = currentWeatherService.getInfo map { t =>
+      Ok(t)
     }
+
+    res
+    Ok("eff off")
+    Future.successful(Ok("hi"))
   }
+
+//  def forecast1() = weatherAction(forecast1WeatherService.getInfo)
+//  def forecast2() = weatherAction(forecast2WeatherService.getInfo)
 }
