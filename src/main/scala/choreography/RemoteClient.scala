@@ -18,7 +18,7 @@ class RemoteClient(hostEnvParam: String) extends Service[Request, Response] {
 
   val client = HTTP
     .client.withSessionQualifier.noFailFast
-    .withTls(host)
+//    .withTls(host)
     .newService(hostAndPort)
 //    ClientBuilder()
 //    .noFailureAccrual
@@ -29,7 +29,7 @@ class RemoteClient(hostEnvParam: String) extends Service[Request, Response] {
 //    .tcpConnectTimeout(1.second)
 //    .retries(2)
 //    .build()
-
+2
   override def apply(request: Request) = {
     client(request) map { res =>
       val response = Response(Version.Http11, Status.Ok)

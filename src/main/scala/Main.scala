@@ -7,10 +7,10 @@ import services._
   * Date: 5/10/16
   */
 object Main extends Runner {
-  var currentService = new CurrentWeatherService
-  var forecast1Service = new Forecast1WeatherService
-  var forecast2Service = new Forecast2WeatherService
-  var historicalService = new HistoricalWeatherService
+  lazy val currentService = new CurrentWeatherService
+  lazy val forecast1Service = new Forecast1WeatherService
+  lazy val forecast2Service = new Forecast2WeatherService
+  lazy val historicalService = new HistoricalWeatherService
 
   def routeMappings: PartialFunction[RouteMatch, Handler] = {
     case Get("current") => { req =>

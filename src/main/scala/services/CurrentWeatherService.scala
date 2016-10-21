@@ -12,7 +12,8 @@ class CurrentWeatherService extends WeatherService {
   val url = "/api/4ff057a10c9613a4/conditions/q/UT/Murray.json"
 
   override def getInfo: Future[String] = {
-    client.get(url) map (_.contentString) map { text =>
+    callRemote map (_.contentString) map { text =>
+      println(s"got text $text")
 
       val tryTransform = for {
         cond <- deserialize[Conditions](text)

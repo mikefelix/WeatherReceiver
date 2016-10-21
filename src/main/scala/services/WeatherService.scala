@@ -6,6 +6,7 @@ import java.time.LocalDateTime
 
 import choreography.RemoteClient
 import com.google.gson.Gson
+import com.twitter.finagle.http.Response
 import com.twitter.util.Future
 
 import scala.annotation.tailrec
@@ -17,11 +18,13 @@ abstract class WeatherService {
   val host: String
   def getInfo: Future[String]
 
-  protected lazy val client = new RemoteClient(s"$url:80")
+  protected lazy val client = new RemoteClient(s"$host:80")
   protected val gson = new Gson
   protected def now = LocalDateTime.now
   protected def hour = now.getHour
   protected def isNight = hour < 7 || hour > 19
+
+  protected def callRemote: Future[Response] = client.get(url)
 
   protected def deserialize[A : ClassTag](text: String) = Try {
     gson.fromJson(text, implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]])

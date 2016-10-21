@@ -7,7 +7,7 @@ abstract class ForecastWeatherService extends WeatherService {
   val url = "/api/4ff057a10c9613a4/forecast/q/UT/Murray.json"
 
   protected def getForecast(first: Boolean): Future[String] = {
-    client.get(url) map (_.contentString) map { text =>
+    callRemote map (_.contentString) map { text =>
 
       val tryTransform = for {
         fore <- deserialize[Forecast](text)
