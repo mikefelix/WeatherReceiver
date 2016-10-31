@@ -1,34 +1,18 @@
 package services
 
-import com.twitter.util.Future
+import choreography.EnvVar
 
-/**
- * WeatherService
- * User: michael.felix
- * Date: 11/26/15
- */
-class CurrentWeatherService extends WeatherService {
-  val host = "api.wunderground.com"
-  val url = "/api/4ff057a10c9613a4/conditions/q/UT/Murray.json"
+object CurrentWeatherService extends WeatherService {
+  val host = EnvVar("CURRENT_HOST")
+  val token = EnvVar("CURRENT_TOKEN")
+  val url = EnvVar("CURRENT_PATH")
 
-  override def getInfo: Future[String] = {
-    callRemote map (_.contentString) map { text =>
-      println(s"got text $text")
+  override def reformat(res: ApiResponse) = {
+    val des = deserialize[Conditions](res.result)
+          .map(new CurrentInfo(_))
+          .flatMap(serialize)
 
-      val tryTransform = for {
-        cond <- deserialize[Conditions](text)
-        ref = reformatConditions(cond)
-        ser <- serialize(ref)
-      } yield ser
-
-      tryTransform getOrElse "Could not retrieve current conditions."
-    }
+    des.map(Reformatting(now, _))
   }
-
-  private def reformatConditions(conditions: Conditions) =
-    CurrentInfo(conditions.current_observation.icon,
-        java.lang.Float.parseFloat(conditions.current_observation.temp_f).round,
-        conditions.current_observation.relative_humidity.replaceAll("[^0-9.]", "").toInt,
-        isNight)
 
 }

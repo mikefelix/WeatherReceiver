@@ -1,25 +1,14 @@
 package services
 
-import com.twitter.util.Future
+import choreography.EnvVar
 
 abstract class ForecastWeatherService extends WeatherService {
-  val host = "api.wunderground.com"
-  val url = "/api/4ff057a10c9613a4/forecast/q/UT/Murray.json"
+  val host = EnvVar("FORECAST_HOST")
+  val url = EnvVar("FORECAST_PATH")
+  val token = EnvVar("FORECAST_TOKEN")
+  val cacheKey = "forecast"
 
-  protected def getForecast(first: Boolean): Future[String] = {
-    callRemote map (_.contentString) map { text =>
-
-      val tryTransform = for {
-        fore <- deserialize[Forecast](text)
-        ref = reformatForecast(fore, first)
-        ser <- serialize(ref)
-      } yield ser
-
-      tryTransform getOrElse "Could not retrieve forecast."
-    }
-  }
-
-  private def reformatForecast(forecast: Forecast, first: Boolean): ForecastInfo = {
+  protected def reformatForecast(forecast: Forecast, first: Boolean): ForecastInfo = {
     val simple = forecast.forecast.simpleforecast
     val textual = forecast.forecast.txt_forecast
     val today = simple.forecastday(0)

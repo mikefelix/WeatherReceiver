@@ -1,58 +1,56 @@
 package services
 
-import com.twitter.util.Future
+import choreography.EnvVar
 
-class HistoricalWeatherService extends WeatherService {
-  val host = "www.ncdc.noaa.gov"
-  val url = "/cdo-web/api/v2/data?datasetid=GHCND&stationid=GHCND:USC00421759" +
-    "&datatypeid=TMIN&datatypeid=TMAX&datatypeid=PRCP" +
-    "&limit=100&units=standard" +
-    "&startdate=$startyear-$startmonth-$startday&enddate=$endyear-$endmonth-$endday"
+import scala.util.Try
 
-  val NOAA_TOKEN = "LHjOaHFgSNaaRzeYcTgFQzClofYkaspD"
+object HistoricalWeatherService extends WeatherService {
+  val host = EnvVar("HISTORICAL_HOST")
+  val url = EnvVar("HISTORICAL_PATH")
+  val token = EnvVar("HISTORICAL_TOKEN")
 
-  def getInfo: Future[String] = {
+  def getYearUrl(year: Int) = {
     val (month, day, year) = {
       val today = now
       (today.getMonth.getValue, today.getDayOfMonth, today.getYear)
     }
 
-    def rurl(year: Int) = url
-             .replaceAll("\\$startyear", year.toString)
-             .replaceAll("\\$(start|end)month", month.toString)
-             .replaceAll("\\$(start|end)day", day.toString)
+    def yearUrl(year: Int) = url
+      .replaceAll("YEAR", year.toString)
+      .replaceAll("MONTH", month.toString)
+      .replaceAll("DAY", day.toString)
 
-    val responseFutures = ((year - 50) until year).map(y => client.get(rurl(y), "token" -> NOAA_TOKEN))
+    client.get(yearUrl(year), "token" -> token)
+  }
 
-    Future collect responseFutures map { responses =>
+  def transform(apiResult: ApiResponse) = for {
+    hist <- deserialize[HistoricalData](apiResult.result)
+    low <- hist.low
+    high <- hist.high
+    precip <- hist.precip
+  } yield History(low, high, precip)
 
-      val data = for {
-        resp <- responses
-        tried = deserialize[HistoricalData](resp.contentString)
-        opt <- tried.toOption
-      } yield opt
+  def average(seq: Seq[Float]) = if (seq.isEmpty)
+    Float.NaN
+  else
+    seq.sum / seq.size
 
-      def collectMeasurement(getFloat: HistoricalData => Option[Float]) = for {
-        d <- data
-        meas <- getFloat(d)
-      } yield meas
-
-      val lows = collectMeasurement(_.low)
-      val highs = collectMeasurement(_.high)
-      val precips = collectMeasurement(_.precip)
-
-      def average(seq: Seq[Float]) = if (seq.isEmpty)
-        Float.NaN
-      else
-        seq.sum / seq.size
-
-      s"""
-        |{
-        | "low": ${average(lows)}
-        | "high": ${average(highs)}
-        | "precip": ${average(precips)}
-        |}
+  override def reformat(responses: Set[ApiResponse]) = Try(
+    s"""
+       |{
+       | "low": ${responses.average(s => s _.low)}
+       | "high": ${average(highs)}
+       | "precip": ${average(precips)}
+       |}
       """.stripMargin
-    }
+  )
+
+  implicit class AverageFloat(set: Set[ApiResponse]){
+    def average(func: ApiResponse => Float) =
+      if (set.isEmpty)
+        Float.NaN
+      else {
+        set.map(func(_)).sum / set.size
+      }
   }
 }

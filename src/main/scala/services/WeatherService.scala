@@ -6,25 +6,36 @@ import java.time.LocalDateTime
 
 import choreography.RemoteClient
 import com.google.gson.Gson
-import com.twitter.finagle.http.Response
 import com.twitter.util.Future
 
 import scala.annotation.tailrec
+import scala.concurrent.Await
+import scala.concurrent.duration._
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
+import choreography.TwitterConverters._
 
 abstract class WeatherService {
   val url: String
   val host: String
-  def getInfo: Future[String]
+  val token: String
+
+  def reformat(w: ApiResponse): Try[Reformatting]
+
+  def remoteResult: Try[ApiResponse] = Try(Await.result(callRemote, 10 seconds)).map(ApiResponse(now, _))
+
+//  def info: Future[String] = remoteResult map { response =>
+//    reformat(response).map(_.text).getOrElse("Could not retrieve weather info.")
+//  }
 
   protected lazy val client = new RemoteClient(s"$host:80")
   protected val gson = new Gson
+
   protected def now = LocalDateTime.now
   protected def hour = now.getHour
   protected def isNight = hour < 7 || hour > 19
 
-  protected def callRemote: Future[Response] = client.get(url)
+  protected def callRemote: Future[String] = client.get(url).map(_.contentString)
 
   protected def deserialize[A : ClassTag](text: String) = Try {
     gson.fromJson(text, implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]])
@@ -50,7 +61,7 @@ abstract class WeatherService {
     } 
   }
 
-  def readLines(reader: BufferedReader) = {
+  protected def readLines(reader: BufferedReader) = {
     val sb = new StringBuilder
     try {
       readLine(sb, reader)

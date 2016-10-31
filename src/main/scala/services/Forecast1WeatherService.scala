@@ -1,5 +1,11 @@
 package services
 
-class Forecast1WeatherService extends ForecastWeatherService {
-  def getInfo = getForecast(first = true)
+object Forecast1WeatherService extends ForecastWeatherService {
+  override def reformat(res: ApiResponse) = {
+    val des = deserialize[Forecast](res.result)
+      .map(reformatForecast(_, first = true))
+      .flatMap(serialize)
+
+    des.map(Reformatting(now, _))
+  }
 }

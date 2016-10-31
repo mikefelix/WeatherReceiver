@@ -29,7 +29,7 @@ class RemoteClient(hostEnvParam: String) extends Service[Request, Response] {
 //    .tcpConnectTimeout(1.second)
 //    .retries(2)
 //    .build()
-2
+
   override def apply(request: Request) = {
     client(request) map { res =>
       val response = Response(Version.Http11, Status.Ok)
@@ -45,6 +45,7 @@ class RemoteClient(hostEnvParam: String) extends Service[Request, Response] {
   def delete(path: String, headers: (String, String)*) = doRequest(Method.Delete, path, None, headers: _*)
 
   private[this] def doRequest(method: Method, path: String, body: Option[String], headers: (String, String)*): Future[Response] = {
+    println(s"Do request: $method $path {${body.getOrElse("")}} $headers")
     val req = Request(Version.Http11, method, path)
     for (t <- headers){
       req.headerMap.set(t._1, t._2)

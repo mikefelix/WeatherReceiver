@@ -10,10 +10,9 @@ import services.CurrentWeatherService
 class IntegrationSpec extends FlatSpec with Matchers with BeforeAndAfter {
   val currentService = new CurrentWeatherService
 
-
   it should "proxy GET requests to order" in {
-      val f = currentService.getInfo
-      val res = Await.result(f)
+      val f = currentService.info
+      val res = Await result f
       println(res)
     }
 }

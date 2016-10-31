@@ -2,7 +2,7 @@ package services
 
 import java.net.InetSocketAddress
 
-import choreography.RouteMatch
+import choreography.{EnvVar, RouteMatch}
 import com.twitter.finagle.Service
 import com.twitter.finagle.builder.ServerBuilder
 import com.twitter.finagle.http.{Request, Response, Status, Version}
@@ -14,27 +14,14 @@ import com.twitter.util.{Await, Future}
   * Date: 5/10/16
   */
 abstract class Runner extends App {
-  type Handler = Request => Future[String]
-
-  def routeMappings: PartialFunction[RouteMatch, Handler]
-
+  def routeMappings: PartialFunction[RouteMatch, String]
+  def startActors(): Unit
   def handle(req: Request): Future[Response] = {
       val route = RouteMatch(req.method, req.path)
       if (routeMappings.isDefinedAt(route)) {
-        val handler = routeMappings(route)
-        val result = handler(req).map { str =>
-          val r = Response(Version.Http11, Status.Ok)
-          r.contentString = str
-          r
-        }
-
-        result.onSuccess { r =>
-          println(s"-> $r")
-        }.onFailure { r =>
-          println(s"!-> $r")
-        }
-
-        result
+        val result = Response(Version.Http11, Status.Ok)
+        result.contentString = routeMappings(route)
+        Future.value(result)
       }
       else {
         Future.value(Response(Status.NotFound))
@@ -58,10 +45,12 @@ abstract class Runner extends App {
 
   val server = ServerBuilder()
     .codec(com.twitter.finagle.http.Http())
-    .bindTo(new InetSocketAddress(7690))
+    .bindTo(new InetSocketAddress(EnvVar("PORT").toInt))
     .name("Server")
     .build(service)
 
-  println("Starting...")
+  println("Starting actors...")
+  startActors()
+  println("Starting server...")
   Await.ready(server)
 }
