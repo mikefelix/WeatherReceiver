@@ -1,64 +1,67 @@
 package services
 
-import java.io.{BufferedReader, IOException, InputStreamReader}
-import java.net.{MalformedURLException, SocketTimeoutException, URL, URLConnection}
 import java.time.LocalDateTime
 
 import choreography.RemoteClient
+import choreography.TwitterConverters._
 import com.google.gson.Gson
 import com.twitter.util.Future
+import util.Attempt
 
-import scala.annotation.tailrec
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
-import choreography.TwitterConverters._
 
-abstract class WeatherService {
+abstract class WeatherService[I : ClassTag, O : ClassTag] {
   val url: String
   val host: String
   val token: String
+  val useTls: Boolean
 
-  def reformat(w: ApiResponse): Try[Reformatting]
+  def transformInput(res: I): Attempt[O]
 
-  def remoteResult: Try[ApiResponse] = Try(Await.result(callRemote, 10 seconds)).map(ApiResponse(now, _))
+  def remoteResult: Attempt[String] = Attempt { await(callRemote) }
+  def consumeRemote(input: String): Attempt[I] = Attempt { deserialize(input) }
+  def serializeOutput(o: O): Attempt[String] = Attempt.orFail("Couldn't serialize output") { serialize(o) }
 
-//  def info: Future[String] = remoteResult map { response =>
-//    reformat(response).map(_.text).getOrElse("Could not retrieve weather info.")
-//  }
+  def getInput = for {
+    res <- remoteResult
+    i <- consumeRemote(res)
+  } yield i
 
-  protected lazy val client = new RemoteClient(s"$host:80")
+  def toOutput(i: I) = transformInput(i) map serializeOutput
+
+  protected lazy val client = new RemoteClient(s"$host:${if (useTls) 443 else 80}")
   protected val gson = new Gson
 
   protected def now = LocalDateTime.now
   protected def hour = now.getHour
   protected def isNight = hour < 7 || hour > 19
 
-  protected def callRemote: Future[String] = client.get(url).map(_.contentString)
+  protected def await[T](f: Future[T]) = Try(Await.result(f, 10 seconds))
 
-  protected def deserialize[A : ClassTag](text: String) = Try {
-    gson.fromJson(text, implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]])
+  protected def callRemote: Future[String] = client.get(url) map {
+    case Success(value) => value
+    case Failure(exception) => exception.getMessage
   }
 
-  protected def serialize[A : ClassTag](obj: A) = Try {
-    gson.toJson(obj, implicitly[ClassTag[A]].runtimeClass.asInstanceOf[Class[A]])
+  protected def deserialize(text: String) = Try {
+    println(s"Deserialize this: $text")
+    val d = gson.fromJson(text, implicitly[ClassTag[I]].runtimeClass.asInstanceOf[Class[I]])
+    println(s"I made a ${d.getClass.getName}: $d")
+    d
   }
 
-  protected def readUrl(urlStr: String, token: Option[String] = None): Try[String] = {
-    try {
-      val connection = new URL(urlStr).openConnection
-      connection.setConnectTimeout(20000)
-      getReader(connection) map readLines
-    }
-    catch {
-      case mue: MalformedURLException => {
-        Failure(mue)
-      }
-      case ioe: IOException => {
-        Failure(ioe)
-      }
-    } 
+  protected def serialize(obj: O) = Try {
+    gson.toJson(obj, implicitly[ClassTag[O]].runtimeClass.asInstanceOf[Class[O]])
+  }
+
+/*
+  protected def readUrl(urlStr: String, token: Option[String] = None): Try[String] = Try {
+    val connection = new URL(urlStr).openConnection
+    connection.setConnectTimeout(20000)
+    getReader(connection) map readLines
   }
 
   protected def readLines(reader: BufferedReader) = {
@@ -69,7 +72,7 @@ abstract class WeatherService {
     finally {
       reader.close()
     }
-    
+
     sb.toString()
   }
 
@@ -82,18 +85,20 @@ abstract class WeatherService {
     }
   }
 
-  private def getReader(connection: URLConnection): Try[BufferedReader] = {
+  private def getReader(connection: URLConnection): Attempt[BufferedReader] = {
     for (i <- 0 to 5) {
       try {
         val is = connection.getInputStream
         val in = new InputStreamReader(is)
-        return Success(new BufferedReader(in))
+        return Attempt.success(new BufferedReader(in))
       }
       catch {
-        case e: SocketTimeoutException => {}
+        case e: SocketTimeoutException =>
+          println(s"Timeout, trying again.")
       }
     }
 
-    Failure(new IOException("Read timed out after five tries."))
+    Attempt failure "Read timed out after five tries."
   }
+*/
 }

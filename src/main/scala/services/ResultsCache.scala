@@ -1,7 +1,8 @@
 package services
 
+import model.WeatherResult
+
 import scala.collection.mutable
-import scala.collection.Set
 import scala.util.matching.Regex
 
 /**
@@ -12,17 +13,16 @@ import scala.util.matching.Regex
 class ResultsCache {
   val cache = new mutable.HashMap[String, WeatherResult]()
 
-  def getAll(r: Regex): Set[WeatherResult] = {
-    cache.keySet.filter(r.findFirstIn(_).nonEmpty).map(key => cache(key))
+  def getAll[T <: WeatherResult](r: Regex): Seq[T] = {
+    cache.keySet.filter(r.findFirstIn(_).nonEmpty).map(key => cache(key).asInstanceOf[T]).toSeq
   }
 
-  def apply(kind: String, transformed: Boolean = true): WeatherResult = {
-    val state = if (transformed) "post" else "pre"
-    cache(s"$kind|$state")
+  def get[T](kind: String): T = {
+    cache(kind).asInstanceOf[T]
   }
 
-  def put(kind: String, transformed: Boolean = true, result: WeatherResult) = {
-    val state = if (transformed) "post" else "pre"
-    cache.put(state, result)
+  def put(kind: String, result: WeatherResult) = {
+    println(s"Cache is inserting $kind")
+    cache.put(kind, result)
   }
 }

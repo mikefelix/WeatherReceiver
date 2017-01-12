@@ -1,11 +1,14 @@
-import actors.Refresh
+import java.time.LocalDateTime
+
+import actors.{CurrentWeatherActor, ForecastWeatherActor, HistoricalWeatherActor, Refresh}
 import akka.actor.{ActorSystem, Props}
 import choreography.Get
 import com.twitter.util.Future
+import model.input.SingleHistoricalDatum
 import services._
 
-import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
 /**
   * RouteMappings
@@ -14,37 +17,43 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 object Main extends Runner {
   lazy val cache = new ResultsCache
-  lazy val currentService = new CurrentWeatherService
-  lazy val forecast1Service = new Forecast1WeatherService
-  lazy val forecast2Service = new Forecast2WeatherService
-  lazy val historicalService = new HistoricalWeatherService
+  lazy val currentService = CurrentWeatherService
+  lazy val forecast1Service = Forecast1WeatherService
+  lazy val forecast2Service = Forecast2WeatherService
+  lazy val historicalService = HistoricalWeatherService
 
   override def startActors() = {
     val system = ActorSystem("weatherSystem")
 
-    val current = system.actorOf(Props(new CurrentWeatherActor(cache, currentService)), name = "currentActor")
+    val current = system.actorOf(Props(new CurrentWeatherActor(cache)), name = "currentActor")
+    val forecast = system.actorOf(Props(new ForecastWeatherActor(cache)), name = "forecastActor")
+    val history = system.actorOf(Props(new HistoricalWeatherActor(cache)), name = "historyActor")
 
+/*
     system.scheduler.schedule(1 second, 5 minutes) {
       current ! Refresh
     }
-/*
 
-    system.scheduler.schedule(5 seconds, 5 minutes) {
-      cache.put("forecast", Await.result(forecast1Service.info, 20 seconds))
-    }
-
-    system.scheduler.schedule(1 seconds, 24 hours) {
-      cache.put("historical", Await.result(historicalService.info, 60 seconds))
+    system.scheduler.schedule(5 seconds, 15 minutes) {
+      forecast ! Refresh
     }
 */
+
+    system.scheduler.schedule(1 seconds, 24 hours) {
+      history ! Refresh
+    }
   }
 
   implicit def toFuture[A](a: A): Future[A] = Future value a
 
+  def day = LocalDateTime.now.getDayOfMonth
+  def month = LocalDateTime.now.getMonthValue
+
   def routeMappings = {
-    case Get("current") => cache("current").result
-    case Get("forecast1") => cache("forecast1").result
-    case Get("forecast2") => cache("forecast2").result
-    case Get("historical") => cache("historical").result
+    case Get("current") => currentService.serializeOutput(cache.get("current")).toString
+    case Get("forecast1") => forecast1Service.serializeOutput(cache.get("forecast1")).toString
+    case Get("forecast2") => forecast2Service.serializeOutput(cache.get("forecast1")).toString
+    case Get("historical") => historicalService.serializeOutput(cache.get(s"history|$day-$month")).toString
+    case Get(other) => historicalService.serializeOutput(cache.get(other)).toString
   }
 }

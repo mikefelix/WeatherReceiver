@@ -1,7 +1,10 @@
 package actors
 
 import akka.actor._
-import services.{ApiResponse, CurrentWeatherService, ResultsCache}
+import model.input.Conditions
+import model.output.CurrentInfo
+import services.{CurrentWeatherService, ResultsCache}
+import util.{Failed, Succeeded}
 
 import scala.util.{Failure, Success}
 
@@ -9,23 +12,22 @@ class CurrentWeatherActor(cache: ResultsCache) extends Actor {
   override def receive = {
 
     case Refresh =>
-      CurrentWeatherService.remoteResult match {
-        case Failure(exception) =>
-          exception.printStackTrace()
-        case Success(value) =>
-          cache.put("current", transformed = false, value)
+      CurrentWeatherService.getInput match {
+        case Failed(why) => println(s"Failed to refresh current: $why")
+        case Succeeded(value) =>
+          cache.put("current_input", value)
           self ! ReformatCurrent
       }
 
     case ReformatCurrent =>
-      val value = cache("current", transformed = false)
-      val reformatted = CurrentWeatherService.reformat(value.asInstanceOf[ApiResponse])
-
-      // TODO: handle failures
-      cache.put("current", transformed = true, reformatted.get)
-
+      val value = cache.get[Conditions]("current_input")
+      CurrentWeatherService.transformInput(value) match {
+        case Succeeded(currentInfo) =>
+          cache.put("current", currentInfo)
+        case Failed(why) =>
+          val old = cache.get[CurrentInfo]("current")
+          cache.put("current", old.copy(cond = old.cond + s" (Refresh failed: $why)"))
+      }
   }
 }
 
-case object Refresh
-case object ReformatCurrent

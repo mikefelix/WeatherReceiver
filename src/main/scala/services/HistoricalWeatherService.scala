@@ -1,56 +1,43 @@
 package services
 
 import choreography.EnvVar
+import choreography.TwitterConverters._
+import model.input.SingleHistoricalDatum
+import model.output.History
+import util.Attempt
 
-import scala.util.Try
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
-object HistoricalWeatherService extends WeatherService {
+object HistoricalWeatherService extends WeatherService[SingleHistoricalDatum, History] {
   val host = EnvVar("HISTORICAL_HOST")
   val url = EnvVar("HISTORICAL_PATH")
   val token = EnvVar("HISTORICAL_TOKEN")
+  val useTls = true
 
-  def getYearUrl(year: Int) = {
-    val (month, day, year) = {
-      val today = now
-      (today.getMonth.getValue, today.getDayOfMonth, today.getYear)
-    }
+  def transformInput(hist: SingleHistoricalDatum) = throw new UnsupportedOperationException
 
-    def yearUrl(year: Int) = url
-      .replaceAll("YEAR", year.toString)
-      .replaceAll("MONTH", month.toString)
-      .replaceAll("DAY", day.toString)
+  def getDay(day: Int, month: Int, year: Int): Attempt[SingleHistoricalDatum] = {
+    val u = url
+          .replaceAll("YEAR", year.toString)
+          .replaceAll("MONTH", month.toString.padTo(2, '0'))
+          .replaceAll("DAY", day.toString.padTo(2, '0'))
 
-    client.get(yearUrl(year), "token" -> token)
+    val future = client.get(u, "token" -> token)
+    val tried = Attempt { Await.result(future, 10 seconds) }
+
+    for {
+      res <- tried
+      i <- consumeRemote(res)
+    } yield i
   }
 
-  def transform(apiResult: ApiResponse) = for {
-    hist <- deserialize[HistoricalData](apiResult.result)
-    low <- hist.low
-    high <- hist.high
-    precip <- hist.precip
-  } yield History(low, high, precip)
-
-  def average(seq: Seq[Float]) = if (seq.isEmpty)
-    Float.NaN
-  else
-    seq.sum / seq.size
-
-  override def reformat(responses: Set[ApiResponse]) = Try(
-    s"""
-       |{
-       | "low": ${responses.average(s => s _.low)}
-       | "high": ${average(highs)}
-       | "precip": ${average(precips)}
-       |}
-      """.stripMargin
-  )
-
-  implicit class AverageFloat(set: Set[ApiResponse]){
-    def average(func: ApiResponse => Float) =
-      if (set.isEmpty)
-        Float.NaN
-      else {
-        set.map(func(_)).sum / set.size
-      }
+  override def serializeOutput(history: History): Attempt[String] = Attempt.orFail("Can't serialize history") {
+    for {
+      low <- history.low
+      high <- history.high
+      precip <- history.precip
+    } yield s"""{"low": $low,"high": $high,"precip": $precip}"""
   }
+
 }

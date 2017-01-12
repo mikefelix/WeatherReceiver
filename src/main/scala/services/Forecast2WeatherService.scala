@@ -1,9 +1,7 @@
 package services
 
-class Forecast2WeatherService extends ForecastWeatherService {
-  override def reformat(forecastText: String) = {
-    deserialize[Forecast](forecastText)
-      .map(reformatForecast(_, first = false))
-      .flatMap(serialize)
-  }
+import model.input.Forecast
+
+object Forecast2WeatherService extends ForecastWeatherService {
+  override def transformInput(res: Forecast) = reformatForecast(res, first = false)
 }

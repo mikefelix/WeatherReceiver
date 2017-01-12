@@ -1,7 +1,8 @@
-package services
+package model.output
 
-import java.util.regex.Matcher
 import java.util.regex.Pattern
+
+import model.WeatherInfo
 
 /**
  * ForecastInfo

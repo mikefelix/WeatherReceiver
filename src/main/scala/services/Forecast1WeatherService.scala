@@ -1,11 +1,7 @@
 package services
 
-object Forecast1WeatherService extends ForecastWeatherService {
-  override def reformat(res: ApiResponse) = {
-    val des = deserialize[Forecast](res.result)
-      .map(reformatForecast(_, first = true))
-      .flatMap(serialize)
+import model.input.Forecast
 
-    des.map(Reformatting(now, _))
-  }
+object Forecast1WeatherService extends ForecastWeatherService {
+  override def transformInput(res: Forecast) = reformatForecast(res, first = true)
 }
