@@ -22,7 +22,7 @@ class ResultsCache {
   }
 
   def put(kind: String, result: WeatherResult) = {
-    println(s"Cache is inserting $kind")
+    println(s"Storing: $kind/${result.recordedAt}")
     cache.put(kind, result)
   }
 }

@@ -1,5 +1,8 @@
 package services
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 import choreography.EnvVar
 import choreography.TwitterConverters._
 import model.input.SingleHistoricalDatum
@@ -17,11 +20,13 @@ object HistoricalWeatherService extends WeatherService[SingleHistoricalDatum, Hi
 
   def transformInput(hist: SingleHistoricalDatum) = throw new UnsupportedOperationException
 
+  def pad(s: String) = if (s.length == 1) "0" + s else s
+
   def getDay(day: Int, month: Int, year: Int): Attempt[SingleHistoricalDatum] = {
     val u = url
           .replaceAll("YEAR", year.toString)
-          .replaceAll("MONTH", month.toString.padTo(2, '0'))
-          .replaceAll("DAY", day.toString.padTo(2, '0'))
+          .replaceAll("MONTH", pad(month.toString))
+          .replaceAll("DAY", pad(day.toString))
 
     val future = client.get(u, "token" -> token)
     val tried = Attempt { Await.result(future, 10 seconds) }
@@ -37,7 +42,13 @@ object HistoricalWeatherService extends WeatherService[SingleHistoricalDatum, Hi
       low <- history.low
       high <- history.high
       precip <- history.precip
-    } yield s"""{"low": $low,"high": $high,"precip": $precip}"""
+    } yield
+      s"""{
+         |"low": $low,
+         |"high": $high,
+         |"precip": $precip,
+         |"recordedAt": ${history.recordedAt}
+         |}""".stripMargin
   }
 
 }

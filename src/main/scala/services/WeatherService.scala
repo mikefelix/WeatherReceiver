@@ -1,6 +1,7 @@
 package services
 
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 import choreography.RemoteClient
 import choreography.TwitterConverters._
@@ -19,6 +20,8 @@ abstract class WeatherService[I : ClassTag, O : ClassTag] {
   val token: String
   val useTls: Boolean
 
+  def currentDateTime = LocalDateTime.now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+
   def transformInput(res: I): Attempt[O]
 
   def remoteResult: Attempt[String] = Attempt { await(callRemote) }
@@ -32,7 +35,7 @@ abstract class WeatherService[I : ClassTag, O : ClassTag] {
 
   def toOutput(i: I) = transformInput(i) map serializeOutput
 
-  protected lazy val client = new RemoteClient(s"$host:${if (useTls) 443 else 80}")
+  protected lazy val client = new RemoteClient(host, useTls)
   protected val gson = new Gson
 
   protected def now = LocalDateTime.now
@@ -47,58 +50,10 @@ abstract class WeatherService[I : ClassTag, O : ClassTag] {
   }
 
   protected def deserialize(text: String) = Try {
-    println(s"Deserialize this: $text")
-    val d = gson.fromJson(text, implicitly[ClassTag[I]].runtimeClass.asInstanceOf[Class[I]])
-    println(s"I made a ${d.getClass.getName}: $d")
-    d
+    gson.fromJson(text, implicitly[ClassTag[I]].runtimeClass.asInstanceOf[Class[I]])
   }
 
   protected def serialize(obj: O) = Try {
     gson.toJson(obj, implicitly[ClassTag[O]].runtimeClass.asInstanceOf[Class[O]])
   }
-
-/*
-  protected def readUrl(urlStr: String, token: Option[String] = None): Try[String] = Try {
-    val connection = new URL(urlStr).openConnection
-    connection.setConnectTimeout(20000)
-    getReader(connection) map readLines
-  }
-
-  protected def readLines(reader: BufferedReader) = {
-    val sb = new StringBuilder
-    try {
-      readLine(sb, reader)
-    }
-    finally {
-      reader.close()
-    }
-
-    sb.toString()
-  }
-
-  @tailrec
-  private def readLine(sb: StringBuilder, reader: BufferedReader): Unit = {
-    val s = reader.readLine
-    if (s != null) {
-      sb append s
-      readLine(sb, reader)
-    }
-  }
-
-  private def getReader(connection: URLConnection): Attempt[BufferedReader] = {
-    for (i <- 0 to 5) {
-      try {
-        val is = connection.getInputStream
-        val in = new InputStreamReader(is)
-        return Attempt.success(new BufferedReader(in))
-      }
-      catch {
-        case e: SocketTimeoutException =>
-          println(s"Timeout, trying again.")
-      }
-    }
-
-    Attempt failure "Read timed out after five tries."
-  }
-*/
 }

@@ -4,7 +4,6 @@ import actors.{CurrentWeatherActor, ForecastWeatherActor, HistoricalWeatherActor
 import akka.actor.{ActorSystem, Props}
 import choreography.Get
 import com.twitter.util.Future
-import model.input.SingleHistoricalDatum
 import services._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -29,7 +28,6 @@ object Main extends Runner {
     val forecast = system.actorOf(Props(new ForecastWeatherActor(cache)), name = "forecastActor")
     val history = system.actorOf(Props(new HistoricalWeatherActor(cache)), name = "historyActor")
 
-/*
     system.scheduler.schedule(1 second, 5 minutes) {
       current ! Refresh
     }
@@ -37,7 +35,6 @@ object Main extends Runner {
     system.scheduler.schedule(5 seconds, 15 minutes) {
       forecast ! Refresh
     }
-*/
 
     system.scheduler.schedule(1 seconds, 24 hours) {
       history ! Refresh
@@ -52,8 +49,16 @@ object Main extends Runner {
   def routeMappings = {
     case Get("current") => currentService.serializeOutput(cache.get("current")).toString
     case Get("forecast1") => forecast1Service.serializeOutput(cache.get("forecast1")).toString
-    case Get("forecast2") => forecast2Service.serializeOutput(cache.get("forecast1")).toString
-    case Get("historical") => historicalService.serializeOutput(cache.get(s"history|$day-$month")).toString
-    case Get(other) => historicalService.serializeOutput(cache.get(other)).toString
+    case Get("forecast2") => forecast2Service.serializeOutput(cache.get("forecast2")).toString
+    case Get("historical") => historicalService.serializeOutput(cache.get(s"historical")).toString
+    case Get("all") =>
+      s"""
+        |{
+        |"current":${currentService.serializeOutput(cache.get("current")).toString},
+        |"forecast1":${forecast1Service.serializeOutput(cache.get("forecast1")).toString},
+        |"forecast2":${forecast1Service.serializeOutput(cache.get("forecast2")).toString},
+        |"historical":${historicalService.serializeOutput(cache.get(s"historical")).toString},
+        |}
+      """.stripMargin
   }
 }

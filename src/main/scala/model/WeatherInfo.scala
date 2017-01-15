@@ -1,5 +1,8 @@
 package model
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 /**
   * WeatherInfo
   * User: michael.felix
@@ -19,4 +22,5 @@ trait WeatherInfo extends WeatherResult {
       cond
 
   val humStr = if (hum > 0) hum + "%" else ""
+
 }

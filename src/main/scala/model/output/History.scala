@@ -15,6 +15,7 @@ case class History(data: Seq[HistoricalData]) extends HistoricalData {
         some <- opt
       } yield some
 
+      println(s"Averaging ${floats.size} readings.")
       if (floats.nonEmpty)
         Some(floats.sum / floats.size)
       else

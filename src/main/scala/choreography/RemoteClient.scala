@@ -11,22 +11,22 @@ import scala.util.{Failure, Success, Try}
   * User: michael.felix
   * Date: 5/10/16
   */
-class RemoteClient(hostEnvParam: String) extends Service[Request, Try[String]] {
-  val hostAndPort = hostEnvParam
-  val (host, port) = {
-    val arr = hostAndPort.split(":")
-    (arr(0), arr(1))
-  }
+class RemoteClient(host: String, useTls: Boolean) extends Service[Request, Try[String]] {
+  val port = if (useTls) 443 else 80
 
-  val client = HTTP
-    .client.withSessionQualifier.noFailFast
-    .withTls(host)
-    .newService(hostAndPort)
+  val client = if (useTls)
+      HTTP.client.withSessionQualifier.noFailFast
+        .withTls(host)
+        .newService(s"$host:$port")
+    else
+      HTTP.client.withSessionQualifier.noFailFast
+        .newService(s"$host:$port")
+
 //    ClientBuilder()
 //    .noFailureAccrual
 //    .codec(Http())
 //    .hosts(hostAndPort)
-//    .tls(host)
+//    .tls(useTls)
 //    .hostConnectionLimit(1)
 //    .tcpConnectTimeout(1.second)
 //    .retries(2)
@@ -47,7 +47,7 @@ class RemoteClient(hostEnvParam: String) extends Service[Request, Try[String]] {
          Failure(new RuntimeException(res.statusCode + ": " + res.contentString))
        }
        else {
-         println(s"SUCC: ${res.statusCode} (${res.status.reason}) ${res.contentString}")
+//         println(s"SUCC: ${res.statusCode} (${res.status.reason}) ${res.contentString}")
          Success(res.contentString)
        }
      }
@@ -60,7 +60,7 @@ class RemoteClient(hostEnvParam: String) extends Service[Request, Try[String]] {
   def delete(path: String, headers: (String, String)*) = doRequest(Method.Delete, path, None, headers: _*)
 
   private[this] def doRequest(method: Method, path: String, body: Option[String], headers: (String, String)*): Future[Try[String]] = {
-    println(s"Do request: $method $host:$port/$path {${body.getOrElse("")}} $headers")
+//    println(s"Do request: $method $host:$port/$path {${body.getOrElse("")}} $headers")
     val req = Request(Version.Http11, method, path)
     for (t <- headers){
       req.headerMap.set(t._1, t._2)

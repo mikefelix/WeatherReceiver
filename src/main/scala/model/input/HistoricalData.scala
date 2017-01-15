@@ -7,11 +7,17 @@ import model.WeatherResult
 
 class SingleHistoricalDatum extends HistoricalData {
   var results: java.util.ArrayList[Reading] = _
+
   lazy val low: Option[Float] = measurement("TMIN")
   lazy val high: Option[Float] = measurement("TMAX")
   lazy val precip: Option[Float] = measurement("PRCP")
 
-  private def measurement(which: String) = Option(results.asScala).flatMap(_.find(_.datatype == which)).map(_.value)
+  private def measurement(which: String) = {
+    if (results == null)
+      None
+    else
+      Option(results.asScala).flatMap { _.find { _.datatype == which}} map (_.value)
+  }
 }
 
 case class Reading(date: String, datatype: String, value: Float)

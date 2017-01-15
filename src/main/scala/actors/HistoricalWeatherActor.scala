@@ -47,7 +47,8 @@ class HistoricalWeatherActor(cache: ResultsCache) extends Actor {
   def compile(day: Int, month: Int): Unit = {
     val responses = cache.getAll[HistoricalData](s"$day-$month.*".r)
     val history = History(responses)
-    cache.put(s"history|$day-$month", history)
+//    cache.put(s"history|$day-$month", history)
+    cache.put(s"historical", history)
   }
 
 }
