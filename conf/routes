@@ -12,3 +12,7 @@ GET        /assets/*file        controllers.Assets.at(path="/public", file)
 GET        /current             controllers.WeatherController.current
 GET        /forecast1           controllers.WeatherController.forecast1
 GET        /forecast2           controllers.WeatherController.forecast2
+
+POST       /garageopen          controllers.GarageStateController.open
+POST       /garageclosed        controllers.GarageStateController.closed
+POST       /garagewarn          controllers.GarageStateController.warn

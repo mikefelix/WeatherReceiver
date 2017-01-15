@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <style>
             /* TODO: use FlowType.js */
             body {
-                background: #000;
-                color: #fff;
+                background: #fff;
+                color: #000;
                 /*text-align: center;*/
             }
             img {
                 height: 60px;
                 width: 60px;
+            }
+            #root {
+                width: 380px;
             }
             .time {
                 font-size: 4em;
@@ -18,11 +22,14 @@
             .title {
                 font-size: 1.5em;
             }
+            .subtitle {
+                font-style: italic;
+            }
             .cast {
-                font-size: 0.7em;
+                font-size: 0.6em;
             }
             .current {
-                font-size: 2.5em;
+                font-size: 2.4em;
                 margin-top: 30px;
             }
             .forecast {
@@ -75,7 +82,7 @@
                 };
 
                 var setCurrent = function () {
-                    $http.get("/current").success(function (data) {
+                    $http.get("/weather/current").success(function (data) {
                         console.log("Current:");
                         console.dir(data);
                         //{"cond":"mostlycloudy","temp":33,"hum":35,"night":false,"humStr":"35%"}
@@ -93,7 +100,7 @@
                 };
 
                 var setForecasts = function () {
-                    $http.get("/forecast1").success(function (data) {
+                    $http.get("/weather/forecast1").success(function (data) {
                         console.log("Forecast1:");
                         console.dir(data);
                         // {"title":"Friday Night","temp":20,"hum":42,"cond":"nt_mostlycloudy","cast":"Considerable cloudiness...","night":false,"humStr":"42%"}
@@ -109,7 +116,7 @@
                         $scope.forecast1.cond = reason;
                     });
 
-                    $http.get("/forecast2").success(function (data) {
+                    $http.get("/weather/forecast2").success(function (data) {
                         console.log("Forecast2:");
                         console.dir(data);
                         // {"title":"Friday Night","temp":20,"hum":42,"cond":"nt_mostlycloudy","cast":"Considerable cloudiness...","night":false,"humStr":"42%"}
@@ -137,8 +144,6 @@
     </head>
     <body ng-app="myApp">
         <div ng-controller="MyCtrl" id="root">
-            <br/>
-            <br/>
             <!--<div style="text-align:center;justify-content:center;align-items:center;">-->
             <div>
                 <div class="section">
@@ -147,28 +152,32 @@
                 <!--<div class="divider"></div>-->
                 <!--<div id="current" class="section">-->
                     <div><img ng-src="{{imgRoot}}/weathericons/{{current.icon}}"/></div>
-                    <div class="current">{{current.temp}}°</div>
-                    <div class="current">{{current.hum}}</div>
+                    <div class="current" style="margin-top:30px">{{current.temp}}°</div>
+                    <!--<div class="current">{{current.hum}}</div>-->
                 </div>
                 <div class="divider"></div>
                 <div id="forecast1title" class="section title">
-                    <div>{{forecast1.title}}</div>
+                    <div class="subtitle">{{forecast1.title}}</div>
                 </div>
                 <div style="clear: both"></div>
                 <div class="section forecast">
-                    <div><img ng-src="{{imgRoot}}/weathericons/{{forecast1.icon}}"/></div>
-                    <div>{{forecast1.dir}}{{forecast1.temp}}°</div>
-                    <div class="cast">{{forecast1.cast}}</div>
+                    <div style="float:left">
+                        <img ng-src="{{imgRoot}}/weathericons/{{forecast1.icon}}"/><br/>
+                        <span>{{forecast1.dir}}{{forecast1.temp}}°</span>
+                    </div>
+                    <span class="cast">{{forecast1.cast}}</div>
                 </div>
                 <div class="divider"></div>
                 <div id="forecast2title" class="section title">
-                    <div>{{forecast2.title}}</div>
+                    <div class="subtitle">{{forecast2.title}}</div>
                 </div>
                 <div style="clear: both"></div>
                 <div class="section forecast">
-                    <div><img ng-src="{{imgRoot}}/weathericons/{{forecast2.icon}}"/></div>
-                    <div>{{forecast2.dir}}{{forecast2.temp}}°</div>
-                    <div class="cast">{{forecast2.cast}}</div>
+                    <div style="float:left">
+                        <img ng-src="{{imgRoot}}/weathericons/{{forecast2.icon}}"/><br/>
+                        <span>{{forecast2.dir}}{{forecast2.temp}}°</span>
+                    </div>
+                    <span class="cast">{{forecast2.cast}}</div>
                 </div>
               </div>
         </div>
