@@ -47,7 +47,7 @@ object HistoricalWeatherService extends WeatherService[SingleHistoricalDatum, Hi
          |"low": $low,
          |"high": $high,
          |"precip": $precip,
-         |"recordedAt": ${history.recordedAt}
+         |"recordedAt": "${history.recordedAt}"
          |}""".stripMargin
   }
 
