@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <style>
             /* TODO: use FlowType.js */
@@ -34,7 +35,6 @@
             }
             .forecast {
                 font-size: 2em;
-                /*margin-top: 30px;*/
             }
             .section {
                 margin-bottom: 10px;
@@ -99,6 +99,21 @@
                     $timeout(setCurrent, 1000 * 60 * 5);
                 };
 
+                var setHistory = function() {
+                    $scope.history = {};    
+                    $http.get("/weather/historical").success(function (data) {
+                        console.log('got history: ');
+                        $scope.history.low = Math.round(data.low) + "°";
+                        $scope.history.high = Math.round(data.high) + "°";
+                        console.dir($scope.history);
+                    }).error(function (reason){
+                        console.log('History error: ' + reason);
+                        $scope.history.low = reason;
+                    });
+
+                    $timeout(setHistory, 1000 * 60 * 60 * 24);
+                };
+
                 var setForecasts = function () {
                     $http.get("/weather/forecast1").success(function (data) {
                         console.log("Forecast1:");
@@ -139,47 +154,67 @@
                 setTime();
                 setCurrent();
                 setForecasts();
+                setHistory();
             });
         </script>
     </head>
     <body ng-app="myApp">
-        <div ng-controller="MyCtrl" id="root">
-            <!--<div style="text-align:center;justify-content:center;align-items:center;">-->
-            <div>
-                <div class="section">
-                    <div class="time">{{hours}}<span ng-class="tickStyle">:</span>{{minutes}}<span style="font-size:0.7em">{{ampm}}</span></div>
+    <div ng-controller="MyCtrl" id="root">
+        <!--<div style="text-align:center;justify-content:center;align-items:center;">-->
+        <div>
+            <div class="section">
+                <div class="time">{{hours}}<span ng-class="tickStyle">:</span>{{minutes}}<span style="font-size:0.7em">{{ampm}}</span></div>
                 <!--</div>-->
                 <!--<div class="divider"></div>-->
                 <!--<div id="current" class="section">-->
-                    <div><img ng-src="{{imgRoot}}/weathericons/{{current.icon}}"/></div>
-                    <div class="current" style="margin-top:30px">{{current.temp}}°</div>
-                    <!--<div class="current">{{current.hum}}</div>-->
+                <div><img ng-src="{{imgRoot}}/weathericons/{{current.icon}}"/></div>
+                <div class="current" style="margin-top:30px">{{current.temp}}°</div>
+                <!--<div class="current">{{current.hum}}</div>-->
+            </div>
+
+            <div class="divider"></div>
+
+            <div id="forecast1title" class="section title">
+                <div class="subtitle">{{forecast1.title}}</div>
+            </div>
+            <div style="clear: both"></div>
+            <div class="section forecast">
+                <div style="float:left">
+                    <img ng-src="{{imgRoot}}/weathericons/{{forecast1.icon}}"/><br/>
+                    <span>{{forecast1.dir}}{{forecast1.temp}}°</span>
                 </div>
-                <div class="divider"></div>
-                <div id="forecast1title" class="section title">
-                    <div class="subtitle">{{forecast1.title}}</div>
+                <span class="cast">{{forecast1.cast}}</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div id="forecast2title" class="section title">
+                <div class="subtitle">{{forecast2.title}}</div>
+            </div>
+            <div style="clear: both"></div>
+
+            <div class="section forecast">
+                <div style="float:left">
+                    <img ng-src="{{imgRoot}}/weathericons/{{forecast2.icon}}"/><br/>
+                    <span>{{forecast2.dir}}{{forecast2.temp}}°</span>
                 </div>
-                <div style="clear: both"></div>
-                <div class="section forecast">
-                    <div style="float:left">
-                        <img ng-src="{{imgRoot}}/weathericons/{{forecast1.icon}}"/><br/>
-                        <span>{{forecast1.dir}}{{forecast1.temp}}°</span>
-                    </div>
-                    <span class="cast">{{forecast1.cast}}</div>
+                <span class="cast">{{forecast2.cast}}</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div id="historicaltitle" class="section title">
+                <div class="subtitle">50-year averages</div>
+            </div>
+            <div style="clear: both"></div>
+
+            <div class="section forecast">
+                <div style="float:left">
+                    <span>↓{{history.low}} &nbsp; ↑{{history.high}}</span>
                 </div>
-                <div class="divider"></div>
-                <div id="forecast2title" class="section title">
-                    <div class="subtitle">{{forecast2.title}}</div>
-                </div>
-                <div style="clear: both"></div>
-                <div class="section forecast">
-                    <div style="float:left">
-                        <img ng-src="{{imgRoot}}/weathericons/{{forecast2.icon}}"/><br/>
-                        <span>{{forecast2.dir}}{{forecast2.temp}}°</span>
-                    </div>
-                    <span class="cast">{{forecast2.cast}}</div>
-                </div>
-              </div>
+            </div>
+
         </div>
+    </div>
     </body>
 </html>
