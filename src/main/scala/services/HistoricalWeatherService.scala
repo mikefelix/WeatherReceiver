@@ -39,13 +39,21 @@ object HistoricalWeatherService extends WeatherService[SingleHistoricalDatum, Hi
 
   override def serializeOutput(history: History): Attempt[String] = Attempt.orFail("Can't serialize history") {
     for {
-      low <- history.low
-      high <- history.high
+      avgLow <- history.low
+      avgHigh <- history.high
+      minLow <- history.minLow
+      minHigh <- history.minHigh
+      maxLow <- history.maxLow
+      maxHigh <- history.maxHigh
       precip <- history.precip
     } yield
       s"""{
-         |"low": $low,
-         |"high": $high,
+         |"low": $avgLow,
+         |"maxLow": $maxLow,
+         |"minLow": $minLow,
+         |"maxHigh": $maxHigh,
+         |"minHigh": $minHigh,
+         |"high": $avgHigh,
          |"precip": $precip,
          |"recordedAt": "${history.recordedAt}"
          |}""".stripMargin
