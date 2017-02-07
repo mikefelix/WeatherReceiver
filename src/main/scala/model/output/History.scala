@@ -21,17 +21,16 @@ case class History(data: Seq[HistoricalData]) extends HistoricalData {
       else
         None
     }
-
   }
 
-  override val low: Option[Float] = data.map(_.low).average
-  override val high: Option[Float] = data.map(_.high).average
-  override val precip: Option[Float] = data.map(_.precip).average
+  override val low = data.map(_.low).average
+  override val high = data.map(_.high).average
+  override val precip = data.map(_.precip).average
 
   val avgLow = low
   val avgHigh = high
-  val maxHigh = data.map(_.high).max
-  val minHigh = data.map(_.high).min
-  val maxLow = data.map(_.low).max
-  val minLow = data.map(_.low).min
+  val maxHigh = data.map(_.high).filter(_.nonEmpty).max
+  val minHigh = data.map(_.high).filter(_.nonEmpty).min
+  val maxLow = data.map(_.low).filter(_.nonEmpty).max
+  val minLow = data.map(_.low).filter(_.nonEmpty).min
 }
