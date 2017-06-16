@@ -35,6 +35,7 @@ abstract class Runner extends App {
       downstreamResult map { res =>
         val upstreamResult = Response(Version.Http11, res.status)
         upstreamResult.contentString = res.contentString
+        upstreamResult.headerMap.add("Access-Control-Allow-Origin", "*")
         upstreamResult
       } ensure { res: Response =>
         res.close()
